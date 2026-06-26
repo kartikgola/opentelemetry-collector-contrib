@@ -9,7 +9,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	_ "embed"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -1156,34 +1155,6 @@ func (m *mockClient) initMocks(database, schema string, databases []string, inde
 		}, nil)
 		m.On("getMaxConnections", mock.Anything).Return(int64(100), nil)
 		m.On("getLatestWalAgeSeconds", mock.Anything).Return(int64(3600), nil)
-		m.On("getDatabaseLocks", mock.Anything).Return([]databaseLocks{
-			{
-				relation: "pg_locks",
-				mode:     "AccessShareLock",
-				lockType: "relation",
-				locks:    3600,
-			},
-			{
-				relation: "pg_class",
-				mode:     "AccessShareLock",
-				lockType: "relation",
-				locks:    5600,
-			},
-		}, nil)
-		m.On("getDatabaseLocks", mock.Anything).Return([]databaseLocks{
-			{
-				relation: "abd_table",
-				mode:     "ExplicitLock",
-				lockType: "relation",
-				locks:    1600,
-			},
-			{
-				relation: "pg_class",
-				mode:     "AccessShareLock",
-				lockType: "relation",
-				locks:    5600,
-			},
-		}, errors.New("some error"))
 		m.On("getReplicationStats", mock.Anything).Return([]replicationStats{
 			{
 				clientAddr:   "unix",
@@ -1311,6 +1282,21 @@ func (m *mockClient) initMocks(database, schema string, databases []string, inde
 			},
 		}
 		m.On("getFunctionStats", mock.Anything, database).Return(functionStats, nil)
+
+		m.On("getDatabaseLocks", mock.Anything).Return([]databaseLocks{
+			{
+				relation: database + "_table1",
+				mode:     "AccessShareLock",
+				lockType: "relation",
+				locks:    int64(index + 100),
+			},
+			{
+				relation: database + "_table2",
+				mode:     "ExclusiveLock",
+				lockType: "relation",
+				locks:    int64(index + 101),
+			},
+		}, nil)
 	}
 }
 

@@ -169,7 +169,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectWalAge(ctx, now, listClient, &errs)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
-	p.collectDatabaseLocks(ctx, now, listClient, &errs)
+	p.collectDatabaseLocks(ctx, now, databases, &errs)
 
 	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
@@ -587,17 +587,28 @@ func (p *postgreSQLScraper) collectBGWriterStats(
 func (p *postgreSQLScraper) collectDatabaseLocks(
 	ctx context.Context,
 	now pcommon.Timestamp,
-	client client,
+	databases []string,
 	errs *errsMux,
 ) {
-	dbLocks, err := client.getDatabaseLocks(ctx)
-	if err != nil {
-		p.logger.Error("Errors encountered while fetching database locks", zap.Error(err))
-		errs.addPartial(err)
-		return
-	}
-	for _, dbLock := range dbLocks {
-		p.mb.RecordPostgresqlDatabaseLocksDataPoint(now, dbLock.locks, dbLock.relation, dbLock.mode, dbLock.lockType)
+	// pg_class is database-local, so the pg_locks join must run against each
+	// configured database to resolve relation OIDs beyond the default database.
+	for _, database := range databases {
+		dbClient, err := p.clientFactory.getClient(database)
+		if err != nil {
+			errs.addPartial(err)
+			p.logger.Error("Failed to initialize connection to postgres for database locks", zap.String("database", database), zap.Error(err))
+			continue
+		}
+		defer dbClient.Close()
+		dbLocks, err := dbClient.getDatabaseLocks(ctx)
+		if err != nil {
+			p.logger.Error("Errors encountered while fetching database locks", zap.String("database", database), zap.Error(err))
+			errs.addPartial(err)
+			continue
+		}
+		for _, dbLock := range dbLocks {
+			p.mb.RecordPostgresqlDatabaseLocksDataPoint(now, dbLock.locks, dbLock.relation, dbLock.mode, dbLock.lockType)
+		}
 	}
 }
 

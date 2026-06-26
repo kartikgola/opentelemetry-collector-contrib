@@ -1,5 +1,9 @@
 resourceMetrics:
-  - resource: {}
+  - resource:
+      attributes:
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: Number of buffers allocated.
@@ -119,7 +123,7 @@ resourceMetrics:
           - description: The number of database locks.
             gauge:
               dataPoints:
-                - asInt: "5600"
+                - asInt: "101"
                   attributes:
                     - key: lock_type
                       value:
@@ -129,10 +133,10 @@ resourceMetrics:
                         stringValue: AccessShareLock
                     - key: relation
                       value:
-                        stringValue: pg_class
+                        stringValue: open_table1
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "3600"
+                - asInt: "100"
                   attributes:
                     - key: lock_type
                       value:
@@ -142,7 +146,59 @@ resourceMetrics:
                         stringValue: AccessShareLock
                     - key: relation
                       value:
-                        stringValue: pg_locks
+                        stringValue: otel_table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "102"
+                  attributes:
+                    - key: lock_type
+                      value:
+                        stringValue: relation
+                    - key: mode
+                      value:
+                        stringValue: AccessShareLock
+                    - key: relation
+                      value:
+                        stringValue: telemetry_table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "102"
+                  attributes:
+                    - key: lock_type
+                      value:
+                        stringValue: relation
+                    - key: mode
+                      value:
+                        stringValue: ExclusiveLock
+                    - key: relation
+                      value:
+                        stringValue: open_table2
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "101"
+                  attributes:
+                    - key: lock_type
+                      value:
+                        stringValue: relation
+                    - key: mode
+                      value:
+                        stringValue: ExclusiveLock
+                    - key: relation
+                      value:
+                        stringValue: otel_table2
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "103"
+                  attributes:
+                    - key: lock_type
+                      value:
+                        stringValue: relation
+                    - key: mode
+                      value:
+                        stringValue: ExclusiveLock
+                    - key: relation
+                      value:
+                        stringValue: telemetry_table2
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: postgresql.database.locks
@@ -210,6 +266,9 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: open
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -221,7 +280,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: "1"
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
@@ -231,7 +290,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
@@ -240,7 +299,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'            
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
@@ -318,7 +377,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'            
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
@@ -338,7 +397,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'            
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
@@ -358,7 +417,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'             
+            unit: '{tup_updated}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -367,6 +426,9 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: otel
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -378,7 +440,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: "1"
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
@@ -388,7 +450,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
@@ -397,7 +459,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'            
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
@@ -475,7 +537,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'            
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
@@ -495,7 +557,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'            
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
@@ -515,7 +577,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'             
+            unit: '{tup_updated}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -524,6 +586,9 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: telemetry
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -535,7 +600,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: "1"
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
@@ -545,7 +610,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
@@ -554,7 +619,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'            
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
@@ -632,7 +697,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'            
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
@@ -652,7 +717,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'            
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
@@ -672,7 +737,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'              
+            unit: '{tup_updated}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -684,6 +749,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -844,6 +912,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -1004,6 +1075,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -1164,6 +1238,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -1324,6 +1401,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -1484,6 +1564,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -1647,6 +1730,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
@@ -1681,6 +1767,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
@@ -1715,6 +1804,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
@@ -1749,6 +1841,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
@@ -1783,6 +1878,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
@@ -1817,6 +1915,9 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.

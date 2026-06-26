@@ -3,7 +3,7 @@ resourceMetrics:
       attributes:
         - key: service.instance.id
           value:
-            stringValue: SAMBALAM-M-P4X5:5432
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: Number of buffers allocated.
@@ -123,7 +123,7 @@ resourceMetrics:
           - description: The number of database locks.
             gauge:
               dataPoints:
-                - asInt: "5600"
+                - asInt: "100"
                   attributes:
                     - key: lock_type
                       value:
@@ -133,20 +133,20 @@ resourceMetrics:
                         stringValue: AccessShareLock
                     - key: relation
                       value:
-                        stringValue: pg_class
+                        stringValue: otel_table1
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "3600"
+                - asInt: "101"
                   attributes:
                     - key: lock_type
                       value:
                         stringValue: relation
                     - key: mode
                       value:
-                        stringValue: AccessShareLock
+                        stringValue: ExclusiveLock
                     - key: relation
                       value:
-                        stringValue: pg_locks
+                        stringValue: otel_table2
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: postgresql.database.locks
@@ -216,7 +216,7 @@ resourceMetrics:
             stringValue: otel
         - key: service.instance.id
           value:
-            stringValue: SAMBALAM-M-P4X5:5432
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -382,7 +382,7 @@ resourceMetrics:
             stringValue: table1
         - key: service.instance.id
           value:
-            stringValue: SAMBALAM-M-P4X5:5432
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -548,7 +548,7 @@ resourceMetrics:
             stringValue: table2
         - key: service.instance.id
           value:
-            stringValue: SAMBALAM-M-P4X5:5432
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of blocks read.
@@ -717,7 +717,7 @@ resourceMetrics:
             stringValue: table1
         - key: service.instance.id
           value:
-            stringValue: SAMBALAM-M-P4X5:5432
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
@@ -757,7 +757,7 @@ resourceMetrics:
             stringValue: table2
         - key: service.instance.id
           value:
-            stringValue: SAMBALAM-M-P4X5:5432
+            stringValue: Kartik-Gola-MacBook-Pro:5432
     scopeMetrics:
       - metrics:
           - description: The number of index scans on a table.
