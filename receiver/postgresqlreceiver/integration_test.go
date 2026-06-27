@@ -28,6 +28,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/scraperinttest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
+	"github.com/stretchr/testify/require"
 )
 
 const postgresqlPort = "5432"
@@ -152,6 +153,75 @@ func integrationTest(name string, databases []string, pgVersion string) func(*te
 			pmetrictest.IgnoreTimestamp(),
 		),
 	).Run
+}
+
+func TestIntegrationCountsPreparedTransactionLocks(t *testing.T) {
+	defer testutil.SetFeatureGateForTest(t, metadata.ReceiverPostgresqlSeparateSchemaAttrFeatureGate, false)()
+	defer testutil.SetFeatureGateForTest(t, metadata.ReceiverPostgresqlConnectionPoolFeatureGate, false)()
+
+	ci, err := testcontainers.GenericContainer(
+		t.Context(),
+		testcontainers.GenericContainerRequest{
+			ContainerRequest: testcontainers.ContainerRequest{
+				Image: fmt.Sprintf("postgres:%s", pre17TestVersion),
+				Env: map[string]string{
+					"POSTGRES_USER":     "root",
+					"POSTGRES_PASSWORD": "otel",
+					"POSTGRES_DB":       "otel",
+				},
+				Files: []testcontainers.ContainerFile{{
+					HostFilePath:      filepath.Join("testdata", "integration", "01-init.sql"),
+					ContainerFilePath: "/docker-entrypoint-initdb.d/01-init.sql",
+					FileMode:          700,
+				}},
+				ExposedPorts: []string{postgresqlPort},
+				Cmd:          []string{"-c", "max_prepared_transactions=10"},
+				WaitingFor: wait.ForListeningPort(postgresqlPort).
+					WithStartupTimeout(2 * time.Minute),
+			},
+			Started: true,
+		})
+	require.NoError(t, err)
+	defer testcontainers.CleanupContainer(t, ci)
+
+	p, err := ci.MappedPort(t.Context(), postgresqlPort)
+	require.NoError(t, err)
+
+	connStr := fmt.Sprintf("postgres://root:otel@localhost:%s/otel?sslmode=disable", p.Port())
+	db, err := sql.Open("postgres", connStr)
+	require.NoError(t, err)
+	defer db.Close()
+
+	const gid = "otel_lock_test"
+	_, err = db.Exec("BEGIN; LOCK TABLE table1 IN ACCESS EXCLUSIVE MODE; PREPARE TRANSACTION '" + gid + "';")
+	require.NoError(t, err)
+	defer func() {
+		_, err := db.Exec("ROLLBACK PREPARED '" + gid + "';")
+		require.NoError(t, err)
+	}()
+
+	cfg := createDefaultConfig().(*Config)
+	cfg.Username = "otelu"
+	cfg.Password = "otelp"
+	cfg.Insecure = true
+	cfg.Endpoint = net.JoinHostPort("localhost", p.Port())
+
+	clientFactory := newDefaultClientFactory(cfg)
+	client, err := clientFactory.getClient("otel")
+	require.NoError(t, err)
+	defer func() {
+		require.NoError(t, client.Close())
+	}()
+
+	locks, err := client.getDatabaseLocks(t.Context())
+	require.NoError(t, err)
+
+	require.Contains(t, locks, databaseLocks{
+		relation: "table1",
+		mode:     "AccessExclusiveLock",
+		lockType: "relation",
+		locks:    1,
+	})
 }
 
 func TestScrapeLogsFromContainer(t *testing.T) {

@@ -311,7 +311,7 @@ type databaseLocks struct {
 }
 
 func (c *postgreSQLClient) getDatabaseLocks(ctx context.Context) ([]databaseLocks, error) {
-	query := `SELECT relname AS relation, mode, locktype,COUNT(pid)
+	query := `SELECT relname AS relation, mode, locktype,COUNT(*)
 	AS locks FROM pg_locks
 	JOIN pg_class ON pg_locks.relation = pg_class.oid
 	GROUP BY relname, mode, locktype;`
