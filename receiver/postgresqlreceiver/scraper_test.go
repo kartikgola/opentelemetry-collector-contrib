@@ -968,11 +968,34 @@ func TestExplainQuery(t *testing.T) {
 				sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow(tc.mockPlanResult),
 			)
 
-			plan, err := client.explainQuery(tc.query, tc.queryID, logger)
+			plan, err := client.explainQuery(t.Context(), tc.query, tc.queryID, logger)
 			require.NoError(t, err)
 			assert.Equal(t, tc.mockPlanResult, plan)
 		})
 	}
+}
+
+func TestExplainQueryUsesContext(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+	defer db.Close()
+
+	logger := zap.NewNop()
+	client := &postgreSQLClient{
+		client:  db,
+		closeFn: func() error { return nil },
+	}
+
+	expectedSQL := "/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan;PREPARE otel_12345 AS SELECT * FROM users;EXPLAIN(FORMAT JSON) EXECUTE otel_12345;"
+	mock.ExpectQuery(expectedSQL).
+		WillDelayFor(50 * time.Millisecond).
+		WillReturnRows(sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow(`[{"Plan":{"Node Type":"Seq Scan","Relation Name":"users"}}]`))
+
+	ctx, cancel := context.WithTimeout(t.Context(), time.Nanosecond)
+	defer cancel()
+
+	_, err = client.explainQuery(ctx, "SELECT * FROM users", "12345", logger)
+	require.Error(t, err)
 }
 
 type (
@@ -984,7 +1007,7 @@ type (
 )
 
 // explainQuery implements client.
-func (*mockClient) explainQuery(string, string, *zap.Logger) (string, error) {
+func (*mockClient) explainQuery(context.Context, string, string, *zap.Logger) (string, error) {
 	panic("unimplemented")
 }
 
